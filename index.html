@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Student Marks Calculator</title>
+</head>
+
+<body>
+
+    <h2>Student Marks & Grade Calculator</h2>
+
+    Name:
+    <input type="text" id="name" value="">
+    <br><br>
+
+    Gender:
+    <input type="radio" name="gender" value="Male"> Male
+    <input type="radio" name="gender" value="Female" > Female
+    <br><br>
+
+    Course:
+    <input type="checkbox" value="HNDIT" class="course" > HNDIT
+    <input type="checkbox" value="HNDA" class="course"> HNDA
+    <input type="checkbox" value="HNDE" class="course"> HNDE
+    <br><br>
+
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>Subject</th>
+            <th>Marks</th>
+            <th>Grade</th>
+        </tr>
+
+        <tr>
+            <td>Machine Learning</td>
+            <td><input type="text" id="m1"></td>
+            <td id="g1"></td>
+        </tr>
+
+        <tr>
+            <td>Computer Network</td>
+            <td><input type="text" id="m2"></td>
+            <td id="g2"></td>
+        </tr>
+
+        <tr>
+            <td>Architecture</td>
+            <td><input type="text" id="m3"></td>
+            <td id="g3"></td>
+        </tr>
+
+        <tr>
+            <th colspan="2">Average</th>
+            <th id="avg"></th>
+        </tr>
+    </table>
+
+    <br>
+
+    <button onclick="calculate()">Calculate</button>
+    <button onclick="nextPage()">Click</button>
+
+    <script>
+        function calculate() {
+
+            let marks = [
+                document.getElementById("m1").value,
+                document.getElementById("m2").value,
+                document.getElementById("m3").value
+            ];
+
+            for (let i = 0; i < 3; i++) {
+
+                if (marks[i].trim() === "" ||
+                    !Number.isFinite(Number(marks[i])) ||
+                    Number(marks[i]) < 0 ||
+                    Number(marks[i]) > 100) {
+
+                    alert("Enter valid marks between 0 and 100");
+                    return false;
+                }
+            }
+
+            marks = marks.map(Number);
+
+            for (let i = 0; i < 3; i++) {
+
+                document.getElementById("g" + (i + 1)).innerText =
+                    marks[i] >= 75 ? "A" :
+                    marks[i] >= 60 ? "B" :
+                    marks[i] >= 40 ? "C" : "D";
+            }
+
+            document.getElementById("avg").innerText =
+                (marks.reduce((a, b) => a + b, 0) / 3).toFixed(2);
+
+            return true;
+        }
+
+        function nextPage() {
+
+            if (!calculate()) {
+                return;
+            }
+
+            let name = document.getElementById("name").value;
+
+            let gender = document.querySelector(
+                'input[name="gender"]:checked'
+            ).value;
+
+            let courses = [...document.querySelectorAll(".course:checked")]
+                .map(c => c.value).join(", ");
+
+            let grade1 = document.getElementById("g1").innerText;
+            let grade2 = document.getElementById("g2").innerText;
+            let grade3 = document.getElementById("g3").innerText;
+
+            let average = document.getElementById("avg").innerText;
+
+            let page = window.open("", "_blank");
+
+            if (!page) {
+                alert("Please allow pop-ups to open the results page.");
+                return;
+            }
+
+            page.document.write(`
+                <!DOCTYPE html>
+                <html>
+
+                <head>
+                    <title>Student Results</title>
+                </head>
+
+                <body>
+
+                    <h1>Student Results</h1>
+
+                    <br>
+
+                    <p>Name: <b id="resultName"></b></p>
+
+                    <p>Gender: <b id="resultGender"></b></p>
+
+                    <p>Course: <b id="resultCourse"></b></p>
+
+                    <br>
+
+                    <p>Machine Learning: <b>${grade1}</b></p>
+
+                    <p>Computer Network: <b>${grade2}</b></p>
+
+                    <p>Architecture: <b>${grade3}</b></p>
+
+                    <p>Average: <b>${average}</b></p>
+
+                </body>
+
+                </html>
+            `);
+
+            page.document.close();
+
+            page.document.getElementById("resultName").textContent = name;
+            page.document.getElementById("resultGender").textContent = gender;
+            page.document.getElementById("resultCourse").textContent =
+                courses || "None selected";
+        }
+    </script>
+
+</body>
+
+</html>
